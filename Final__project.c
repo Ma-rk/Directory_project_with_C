@@ -4,27 +4,41 @@
 #include <windows.h>
 #include "myTypes.h"
 
+memberList members;
 
 int main()
 {
+	int memberLoadResult = loadMembers();
+	if (memberLoadResult!=1){
+		puts("data load error");
+	}
 	int choice;
-	while (1){
 
+	while (1){
 		system("cls");
 		choice = showList();
 
 		switch (choice){
 		case 1:
 			system("cls");
-			printPeople();
-
-
+			printMembers();
+			//printPeople();
+			break;
+		case 2:
+			system("cls");
+			registerMember();
+			//printPeople();
+			break;
+		case 5:
+			system("cls");
+			save();
+			//printPeople();
+			break;
+		case 7:
+			system("cls");
+			return;
 		}
 	}
-
-
-
-
 }
 
 int showList()
@@ -88,8 +102,12 @@ void printPeople()
 		fscanf(fp, "%d%s\t%[^\t]\t%s", &sNum, name, address, phone);
 		while (check--&&!feof(fp)){
 
-			printf("|   %7d   |%8s  |   %s  |   %s   \n", sNum, name, phone, address);
+			member_t * member = (member_t *)malloc(sizeof(member_t));
+
 			fscanf(fp, "%d%s\t%[^\t]%s", &sNum, name, address, phone);
+			
+			
+			printf("|   %7d   |%8s  |   %s  |   %s   \n", sNum, name, phone, address);
 
 		}
 		printf("=======================================================================\n");
@@ -122,15 +140,15 @@ void printPeople()
 				SetColor(15, 0);
 			}
 		}
-
-
 		if (feof(fp))
 			break;
-
 	}
 	fclose(fp);
 
 }
+
+
+
 
 void SetColor(int color, int bgcolor)
 {
