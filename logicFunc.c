@@ -87,12 +87,20 @@ void registerMember(){
 	//신규회원 주소를 키보드로 입력받음
 	printf(". 신규회원 주소: ");
 	getMemberAddress(newAddress);
-	printf("%s \n", newAddress);
+	//printf("%s \n", newAddress);
 
 	//신규회원 전번을 키보드로 입력받음
 	printf(". 신규회원 전화번호: ");
-	getMemberMobile(newMobileNumber);
-	printf("%s \n", newMobileNumber);
+	int getMemberMobileResult = -1;
+	//printf("%s \n", newMobileNumber);
+	while (getMemberMobileResult == -1){
+		if (getMemberMobile(newMobileNumber) == -1){
+			printf("전화번호가 형식에 맞지 않습니다.\n");
+			printf("숫자와 하이픈(-)만 사용해서 입력해야 합니다.\n");
+			printf("전화번호를 다시 입력하세요.\n");
+			getch();
+		}
+	}
 
 	//입력받은 값들을 구조체에 넣음
 	member_t * newMember = (member_t *)malloc(sizeof(member_t));
@@ -153,15 +161,22 @@ void getMemberAddress(char * newAddreaa){
 }
 
 //회원 전화번호 입력받음(검색, 가입 등에 사용함)
-void getMemberMobile(char * newMobileNumber){
+int getMemberMobile(char * newMobileNumber){
 	char * newLinePosition;
 
 	fflush(stdin);
 	fgets(newMobileNumber, MOBILE_LENGTH, stdin);
-	if ((newLinePosition = strchr(newMobileNumber, '\n')) != NULL)
-	{
-		*newLinePosition = '\0';
-	}
+
+	//if ((newLinePosition = strchr(newMobileNumber, '\n')) != NULL)
+	//{
+	//	*newLinePosition = '\0';
+	//}
+	//for (int i = 0; i < strlen(newMobileNumber)-1; i++){
+	//	if (!(newMobileNumber[i] <= 48 && newMobileNumber[i] >= 57) || !(newMobileNumber[i] == 45)){
+	//		return -1;
+	//	}
+	//}
+	return 1;
 }
 
 //6. 저장.
@@ -184,4 +199,6 @@ void save(){
 		currentNode = currentNode->next;
 	} while (currentNode);
 	fclose(data);
+	printf("모든 데이터를 하드디스크에 저장했습니다. 아무 키나 누르십시오.\n");
+	getch();
 }

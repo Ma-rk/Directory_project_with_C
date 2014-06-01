@@ -48,7 +48,7 @@ void getMemberAddress(char *);
 
 //회원 전화번호 입력받음(검색, 가입 등에 사용함)
 //성공시 전화번호 포인터를 리턴, 실패 또는 취소시 -1 리턴
-void getMemberMobile(char *);
+int getMemberMobile(char *);
 
 //3. 회원검색 기능 실행시 하위 메뉴로 진입하게 함
 //getMemberName();getMemberAddress();getMemberMobile(); 함수를 이용해
