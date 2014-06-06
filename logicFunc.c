@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "myTypes.h"
+#define LEFT  75
+#define UP    72
+#define RIGHT 77
+#define DOWN  80
+
 
 extern memberList members;
 extern clearLineFromReadBuffer();
@@ -40,30 +45,70 @@ int loadMembers(){
 	return 1;
 }
 
-//1. 출력
 //메모리에 linkedList 형태로 저장된 데이터를 화면에 출력함
 void printMembers(){
 	node_t * currentNode = members.head;
 	node_t * lastNode = members.tail;
 	member_t * currentMember;
-
+	int static check = 19;
+	int che = 0;
+	int ch;
 	if (members.head == NULL || members.tail == NULL){
 		printf("출력할 데이터가 없습니다.");
 		return;
 	}
+
 	do{
-		currentMember = currentNode->member;
-		printf("|   %7d   |%8s  |   %s     %s   \n"
-			, currentMember->memID, currentMember->memName
-			, currentMember->memAddress, currentMember->memMobileNumber);
-		currentNode = currentNode->next;
+		system("cls");
+		SetColor(10, 0);
+		printf("=======================================================================\n");
+		printf("|  Student ID |   Name   |   Phone number   |       Home address       \n");
+		printf("=======================================================================\n");
+		SetColor(15, 0);
+		do{
+			che++;
+			currentMember = currentNode->member;
+			currentNode = currentNode->next;
+
+			printf("|   %7d   |%8s  |   %s  |   %s   \n", currentMember->memID, currentMember->memName,
+				currentMember->memMobileNumber, currentMember->memAddress);
+
+		} while (currentNode&&che % 20);
+		printf("=======================================================================\n");
+		SetColor(12, 15);
+		printf("← : 이전 페이지  →: 다음 페이지  ↓ : 메인으로 돌아가기              ");
+		while (1)
+		{
+			ch = getch();
+			if (ch == DOWN){
+				return;
+			}
+			else if (ch == RIGHT){
+				if (!currentNode){
+					SetColor(12, 15);
+					gotoxy(0, 25);
+					printf("회원정보의 마지막 페이지입니다.                                        ");
+					SetColor(12, 15);
+					continue;
+				}
+				break;
+			}
+			else if (ch == LEFT){
+				currentNode = members.head;
+				che = 0;
+				break;
+			}
+			else{
+				gotoxy(0, 24);
+				SetColor(12, 15);
+				printf("잘못 입력하셨습니다. ←, →, ↓ 중에 하나를 선택하세요.\b                 ");
+				SetColor(15, 0);
+			}
+		}
 	} while (currentNode);
-	printf("아무 키나 누르면 초기화면으로 이동합니다.");
-	getch();//사용자가 아무 키나 누를 때까지 기다림
+	
 }
 
-
-//2. 등록
 //신규 회원의 정보를 입력받는 함수들을 호출하여 리턴값을 구조체에 담는다.
 //신규 회원의 정보가 담긴 노드를 linkedList의 맨 뒤에 add한다.
 void registerMember(){
@@ -85,21 +130,23 @@ void registerMember(){
 	//신규회원 이름을 키보드로 입력받음
 	printf(". 신규회원 이름: ");
 	getMemberName(newName);
+	printf("%s \n", newName);
 
 	//신규회원 주소를 키보드로 입력받음
 	printf(". 신규회원 주소: ");
 	getMemberAddress(newAddress);
+	//printf("%s \n", newAddress);
 
 	//신규회원 전번을 키보드로 입력받음
 	printf(". 신규회원 전화번호: ");
 	int getMemberMobileResult = -1;
+	//printf("%s \n", newMobileNumber);
 	while (getMemberMobileResult == -1){
-		getMemberMobileResult = getMemberMobile(newMobileNumber);
-
-		if (getMemberMobileResult == -1){
+		if (getMemberMobile(newMobileNumber) == -1){
 			printf("전화번호가 형식에 맞지 않습니다.\n");
 			printf("숫자와 하이픈(-)만 사용해서 입력해야 합니다.\n");
-			printf("전화번호를 다시 입력하세요.: ");
+			printf("전화번호를 다시 입력하세요.\n");
+			getch();
 		}
 	}
 
@@ -116,12 +163,6 @@ void registerMember(){
 
 	//노드를 linkedList 맨 뒤에 add함
 	addMember(node);
-
-	printf("\n");
-	printf("신규 회원정보가 입력되었습니다.\n");
-	printf("입력하신 정보를 보존하려면 프로그램 종료 전에 저장해 주십시오.\n");
-	printf("아무 키나 누르면 초기화면으로 이동합니다.\n");
-	getch();
 }
 
 
@@ -141,55 +182,52 @@ int generateNewID(){
 
 //회원 이름을 입력받음(검색, 가입 등에 사용함)
 void getMemberName(char * newName){
+	char * newLinePosition;
+
+	//clearLineFromReadBuffer();
+	//fgets(newName, NAME_LENGTH, stdin);
 	fflush(stdin);
 	gets_s(newName, NAME_LENGTH);
+	//if ((newLinePosition = strchr(newName, '\n')) != NULL)
+	//{
+	//	*newLinePosition = '\0';
+	//}
 }
 
 //회원 주소를 입력받음(검색, 가입 등에 사용함)
 void getMemberAddress(char * newAddreaa){
+	char * newLinePosition;
+
+	//clearLineFromReadBuffer();
 	fflush(stdin);
 	gets_s(newAddreaa, ADDRESS_LENGTH);
+	/*fgets(newAddreaa, ADDRESS_LENGTH, stdin);
+	if ((newLinePosition = strchr(newAddreaa, '\n')) != NULL)
+	{
+		*newLinePosition = '\0';
+	}*/
 }
 
 //회원 전화번호 입력받음(검색, 가입 등에 사용함)
-//사용자가 입력한 전화번호를 newMobileNumber 변수에 저장함.
-//올바른 전화번호를 입력했는지를 판단하여 결과를 리턴해줌.
 int getMemberMobile(char * newMobileNumber){
-	int getMemberMobileResult;
+	char * newLinePosition;
 
 	fflush(stdin);
 	fgets(newMobileNumber, MOBILE_LENGTH, stdin);
 
-	int newMobileNumberLength = strlen(newMobileNumber) - 1;
-	
-	if (newMobileNumber[0] == 45 || newMobileNumber[newMobileNumberLength - 1] == 45){
-		getMemberMobileResult = -1;//첫글자 또는 마지막 글자가 하이픈(-)이면 -1
-	}
-	else{
-		for (int i = 0; i < strlen(newMobileNumber) - 1; i++){
-			if (newMobileNumber[i] >= 48 && newMobileNumber[i] <= 57) {//숫자인지 아닌지 판별
-				getMemberMobileResult = 1;
-			}
-			else{
-				if (newMobileNumber[i] == 45){//하이픈(-)인지 아닌지 판별
-					getMemberMobileResult = 1;
-				}
-				else{
-					getMemberMobileResult = -1;//숫자도 하이픈도 아닌 문자가 하나라도 있으면 -1
-					break;
-				}
-			}
-		}
-	}
-	return getMemberMobileResult;
+	//if ((newLinePosition = strchr(newMobileNumber, '\n')) != NULL)
+	//{
+	//	*newLinePosition = '\0';
+	//}
+	//for (int i = 0; i < strlen(newMobileNumber)-1; i++){
+	//	if (!(newMobileNumber[i] <= 48 && newMobileNumber[i] >= 57) || !(newMobileNumber[i] == 45)){
+	//		return -1;
+	//	}
+	//}
+	return 1;
 }
 
-//4. 수정
-void editMember(){
-
-}
-
-//5. 저장.
+//6. 저장.
 void save(){
 	FILE * data = fopen("data.txt", "wt");
 
@@ -203,7 +241,7 @@ void save(){
 	}
 	do{
 		currentMember = currentNode->member;
-		fprintf(data, "%d\t%s\t%s\t%s\n"
+		fprintf(data,"%d\t%s\t%s\t%s\n"
 			, currentMember->memID, currentMember->memName
 			, currentMember->memAddress, currentMember->memMobileNumber);
 		currentNode = currentNode->next;
@@ -211,10 +249,4 @@ void save(){
 	fclose(data);
 	printf("모든 데이터를 하드디스크에 저장했습니다. 아무 키나 누르십시오.\n");
 	getch();
-}
-
-
-//6. 검색
-void searchMember(){
-
 }
