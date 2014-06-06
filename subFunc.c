@@ -14,7 +14,7 @@ void clearLineFromReadBuffer(void){
 void addMember(node_t * newNode){
 	if (!members.head){
 		members.head = newNode;
-		members.tail= newNode;
+		members.tail = newNode;
 		newNode->next = NULL;
 	}
 	else{

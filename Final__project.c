@@ -9,7 +9,7 @@ memberList members;
 int main()
 {
 	int memberLoadResult = loadMembers();
-	if (memberLoadResult!=1){
+	if (memberLoadResult != 1){
 		puts("data load error");
 	}
 	int choice;
@@ -22,17 +22,22 @@ int main()
 		case 1:
 			system("cls");
 			printMembers();
-			//printPeople();
 			break;
 		case 2:
 			system("cls");
 			registerMember();
-			//printPeople();
+			break;
+		case 4:
+			system("cls");
+			editMember();
 			break;
 		case 5:
 			system("cls");
 			save();
-			//printPeople();
+			break;
+		case 6:
+			system("cls");
+			searchMember();
 			break;
 		case 7:
 			system("cls");
@@ -105,8 +110,8 @@ void printPeople()
 			member_t * member = (member_t *)malloc(sizeof(member_t));
 
 			fscanf(fp, "%d%s\t%[^\t]%s", &sNum, name, address, phone);
-			
-			
+
+
 			printf("|   %7d   |%8s  |   %s  |   %s   \n", sNum, name, phone, address);
 
 		}

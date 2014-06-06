@@ -76,4 +76,3 @@ void addMember(node_t * newNode);
 
 //사용자 정보가 담긴 node를 list에 insert한다.
 void insertNode(list_t, node_t, memberList);
-
