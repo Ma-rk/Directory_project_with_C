@@ -4,7 +4,16 @@
 #include <windows.h>
 #include "myTypes.h"
 
-memberList members;
+//디스크에서 읽은 회원정보를 저장할 자료구조(Linked List).
+//추가, 수정, 삭제 실행시 여기에 들어있는 정보가 변경된다.
+//저장시 여기에 들어있는 정보를 저장한다.
+//(사실은 링크드 리스트의 헤드랑 테일의 포인터만 들어있음...)
+memberList members;// = {};
+
+//검색결과를 담는 자료구조.
+//검색조건에 해당하는 데이터를 여기에 담는다.
+//여기에 들어있는 데이터를 골라 수정, 삭제를 실행한다.
+memberList searchResult;
 
 int main()
 {
@@ -16,7 +25,7 @@ int main()
 
 	while (1){
 		system("cls");
-		choice = showList();
+		choice = showMenuList();
 
 		switch (choice){
 		case 1:
@@ -26,6 +35,10 @@ int main()
 		case 2:
 			system("cls");
 			registerMember();
+			break;
+		case 3:
+			system("cls");
+			deleteMember();
 			break;
 		case 4:
 			system("cls");
@@ -37,7 +50,9 @@ int main()
 			break;
 		case 6:
 			system("cls");
-			searchMember();
+			callSearchMember();
+			printf("계속하려면 아무키나\n");
+			getch();
 			break;
 		case 7:
 			system("cls");
@@ -46,8 +61,9 @@ int main()
 	}
 }
 
-int showList()
+int showMenuList()
 {
+	fflush(stdin);
 	int num;
 	gotoxy(1, 4);
 	SetColor(16, 15);
@@ -69,6 +85,7 @@ int showList()
 	return num;
 }
 
+
 void gotoxy(int x, int y)
 {
 	COORD Cur;
@@ -76,83 +93,6 @@ void gotoxy(int x, int y)
 	Cur.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
 }
-
-void printPeople()
-{
-	int i, check, get;
-	int sNum;
-	int num;
-	int ch;
-	char name[10];
-	char address[30];
-	char phone[20];
-
-	FILE *fp;
-	fp = fopen("data.txt", "rt");
-
-	if (fp == NULL){
-		puts("error\n");
-		return -1;
-	}
-
-	while (1)
-	{
-		check = 19;
-
-		SetColor(10, 0);
-		printf("=======================================================================\n");
-		printf("|  Student ID |   Name   |   Phone number   |       Home address       \n");
-		printf("=======================================================================\n");
-		SetColor(15, 0);
-		fscanf(fp, "%d%s\t%[^\t]\t%s", &sNum, name, address, phone);
-		while (check--&&!feof(fp)){
-
-			member_t * member = (member_t *)malloc(sizeof(member_t));
-
-			fscanf(fp, "%d%s\t%[^\t]%s", &sNum, name, address, phone);
-
-
-			printf("|   %7d   |%8s  |   %s  |   %s   \n", sNum, name, phone, address);
-
-		}
-		printf("=======================================================================\n");
-		SetColor(9, 15);
-		printf("<- : 이전 회원정보 보기 -> : 다음 회원정보 보기 ↓ : Main메뉴로 돌아가기\n");
-		SetColor(15, 0);
-
-		while (1)
-		{
-			ch = getch();
-			if (ch == 75){
-				fseek(fp, 0L, SEEK_SET);
-				system("cls");
-				break;
-			}
-			else if (ch == 77 && !feof(fp)){
-				system("cls");
-				break;
-			}
-			else if (ch == 80){
-				return;
-			}
-			else{
-				gotoxy(0, 24);
-				SetColor(12, 15);
-				if (feof(fp))
-					printf("회원정보의 마지막 페이지입니다.                                         ");
-				else
-					printf("잘못 입력하셨습니다. <- , -> , ↓ 중에 하나를 선택하세요.               ");
-				SetColor(15, 0);
-			}
-		}
-		if (feof(fp))
-			break;
-	}
-	fclose(fp);
-
-}
-
-
 
 
 void SetColor(int color, int bgcolor)

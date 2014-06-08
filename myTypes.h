@@ -10,11 +10,12 @@ void SetColor(int color, int bgcolor);
 typedef struct member{
 	int memID;
 	char memName[NAME_LENGTH];
-	char memAddress[50];
-	char memMobileNumber[50];
+	char memAddress[ADDRESS_LENGTH];
+	char memMobileNumber[MOBILE_LENGTH];
 } member_t;
 
 typedef struct node{
+	int index;
 	member_t * member;
 	struct node * next;
 } node_t;
@@ -53,7 +54,14 @@ int getMemberMobile(char *);
 //3. 회원검색 기능 실행시 하위 메뉴로 진입하게 함
 //getMemberName();getMemberAddress();getMemberMobile(); 함수를 이용해
 //검색할 회원 정보를 입력받고, 입력이 완료되면 메모리의 데이터로부터 검색을 실행한다.
-void searchMember();
+void callSearchMember();
+void searchMember(int, int, char *);
+void searchMemberByID(node_t *, int);
+void searchMemberByName(node_t *, char *);
+void searchMemberByAddress(node_t *, char *);
+void searchMemberByMobileNumber(node_t *, char *);
+void foundNode(node_t * currentNode, int * p_searchResultCount);
+
 
 //4. 정보수정 기능 실행시 하위 메뉴로 진입하게 함
 //searchMember(); 함수를 이용해 수정할 회원을 검색하여 선택한 후
@@ -76,3 +84,5 @@ void addMember(node_t * newNode);
 
 //사용자 정보가 담긴 node를 list에 insert한다.
 void insertNode(list_t, node_t, memberList);
+
+void freeList(memberList *);
